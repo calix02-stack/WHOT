@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b3d31">
+<title>Whot - Play the Nigerian card game</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--felt:#0e4d3c;--felt2:#0b3d31;--cream:#fff8e7;--ink:#2a1d12;--gold:#f2b134;--red:#d7263d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 50% 40%,var(--felt),var(--felt2));color:var(--cream);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;overflow:hidden;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+#app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;padding:8px 10px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{margin:0;font-size:26px;letter-spacing:1px;color:var(--gold)}
+#score{font-size:13px;opacity:.85}
+button{font:inherit;cursor:pointer}
+.ib{background:#ffffff1f;color:var(--cream);border:0;border-radius:10px;padding:8px 12px;font-weight:700}
+.ib:focus-visible,.card:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#cpu{display:flex;justify-content:center;align-items:center;min-height:100px;position:relative;margin-top:6px}
+#cpu .back{margin-left:-34px}
+#cpu .back:first-child{margin-left:0}
+#cpuN{position:absolute;right:0;top:0;font-size:13px;background:#0006;border-radius:20px;padding:3px 10px}
+#mid{flex:1;display:flex;align-items:center;justify-content:center;gap:22px;min-height:150px}
+.pile{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px}
+.card{width:64px;height:96px;border-radius:9px;background:var(--cream);color:var(--ink);border:2px solid #d9cfb4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:4px 5px;font-weight:800;font-size:15px;box-shadow:0 3px 6px #0005;flex:0 0 auto;transition:transform .15s}
+.card i{font-style:normal;align-self:flex-start;line-height:1}
+.card i:last-child{align-self:flex-end;transform:rotate(180deg)}
+.card.big{width:84px;height:126px;font-size:19px}
+.card.whot{background:linear-gradient(160deg,#fff8e7,#f4d98a);justify-content:center;gap:4px;color:var(--red);font-size:26px}
+.card.whot span{font-size:11px;letter-spacing:1px}
+.back{width:64px;height:96px;border-radius:9px;background:repeating-linear-gradient(45deg,#a31d2e 0 6px,#8b1626 6px 12px);border:3px solid var(--cream);box-shadow:0 3px 6px #0005;flex:0 0 auto}
+.back.big{width:84px;height:126px;display:flex;align-items:center;justify-content:center;color:var(--cream);font-weight:800;font-size:20px;cursor:pointer}
+.back.big.live{box-shadow:0 0 0 4px var(--gold),0 3px 10px #0007}
+#chip{display:flex;align-items:center;gap:6px;background:#0006;border-radius:20px;padding:3px 10px 3px 6px}
+#info{min-height:44px;text-align:center;font-size:15px;padding:4px 6px}
+#info b{color:var(--gold)}
+#me{display:flex;gap:6px;overflow-x:auto;padding:14px 6px 12px;scroll-snap-type:x proximity;min-height:130px}
+#me .card{cursor:pointer;scroll-snap-align:center;border:0;font-family:inherit}
+#me .card.ok{transform:translateY(-12px);box-shadow:0 0 0 3px var(--gold),0 5px 10px #0007}
+#me .card.no{opacity:.55;cursor:default}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}
+.modal.on{display:flex}
+.sheet{background:#fff8e7;color:var(--ink);border-radius:16px;padding:18px;width:100%;max-width:420px;max-height:88%;overflow:auto}
+.sheet h2{margin:0 0 10px}
+.sheet p,.sheet li{font-size:14px;line-height:1.45}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);border-radius:10px;padding:10px 14px;font-weight:700}
+.btn.alt{background:transparent;color:var(--ink)}
+.btn.sel{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.shapes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.shapes button{background:#fff;border:2px solid #d9cfb4;border-radius:10px;padding:10px 0;display:flex;justify-content:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-height:640px){#cpu{min-height:70px}.back{height:70px;width:48px}.card{width:56px;height:84px}}
+</style></head>
+<body>
+<div id="app">
+<header><h1>Whot</h1><span id="score"></span><button class="ib" id="mb" aria-label="Menu">Menu</button></header>
+<section id="cpu" aria-label="Computer's cards"></section>
+<section id="mid"><div class="pile"><div class="back big" id="mkt" role="button" tabindex="0" aria-label="Draw from market">Market</div><span id="mn"></span></div><div class="pile"><div id="top"></div><div id="chip"></div></div></section>
+<div id="info" aria-live="polite"></div>
+<section id="me" aria-label="Your cards"></section>
+</div>
+
+<div class="modal" id="pick"><div class="sheet"><h2>Choose a shape</h2><div class="shapes" id="shapes"></div></div></div>
+<div class="modal" id="end"><div class="sheet"><h2 id="et"></h2><p id="eb"></p><div class="row"><button class="btn" id="again">Play again</button></div></div></div>
+<div class="modal" id="menu"><div class="sheet">
+<h2>Menu</h2>
+<p><b>Computer level</b></p>
+<div class="row" id="lv"></div>
+<p><b>House rules</b></p>
+<div class="row"><button class="btn alt" id="rd"></button><button class="btn alt" id="rs"></button></div>
+<p id="st"></p>
+<h2 style="margin-top:14px">How to play</h2>
+<ul>
+<li>Play a card that matches the top card's <b>shape</b> or <b>number</b>.</li>
+<li>Can't play? Tap the <b>Market</b> to draw one card. Your turn then ends.</li>
+<li><b>1</b> Hold on: play again. <b>8</b> Suspension: play again.</li>
+<li><b>2</b> Pick two. <b>5</b> Pick three. If defend is on, you can answer with the same number to pass it back.</li>
+<li><b>14</b> General market: the other player draws 1 and you play again.</li>
+<li><b>20 Whot</b> plays on anything and lets you choose the shape.</li>
+<li>First to finish all cards wins.</li></ul>
+<div class="row"><button class="btn" id="ng">New game</button><button class="btn alt" id="cl">Close</button></div>
+</div></div>
+
+<script>
+(function(){
+"use strict";
+var SH={circle:'<circle cx="12" cy="12" r="9"/>',triangle:'<path d="M12 3 22 21H2z"/>',cross:'<path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/>',square:'<rect x="3" y="3" width="18" height="18" rx="2"/>',star:'<path d="m12 2 3 7 7.5.6-5.7 5 1.8 7.4L12 18l-6.6 4 1.8-7.4-5.7-5L9 9z"/>'};
+var COL={circle:'#d7263d',triangle:'#2a6fdb',cross:'#7b3fb8',square:'#e58a00',star:'#0e9f6e'};
+var NUMS={circle:[1,2,3,4,5,7,8,10,11,12,13,14],triangle:[1,2,3,4,5,7,8,10,11,12,13,14],cross:[1,2,3,5,7,10,11,13,14],square:[1,2,3,5,7,10,11,13,14],star:[1,2,3,4,5,7,8]};
+var $=function(i){return document.getElementById(i)};
+var G,S={lv:'medium',def:true,snd:true,w:0,l:0};
+try{var sv=JSON.parse(localStorage.getItem('whot-s')||'null');if(sv)for(var k in sv)S[k]=sv[k]}catch(e){}
+function save(){try{localStorage.setItem('whot-s',JSON.stringify(S))}catch(e){}}
+
+var AC;function beep(f,d){if(!S.snd)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+
+function svg(s,z){return '<svg viewBox="0 0 24 24" width="'+z+'" height="'+z+'" fill="'+COL[s]+'" aria-hidden="true">'+SH[s]+'</svg>'}
+function cardEl(c,big,tag){var d=document.createElement(tag||'div');d.className='card'+(big?' big':'')+(c.n===20?' whot':'');
+ d.setAttribute('aria-label',c.n===20?'Whot card':c.s+' '+c.n);
+ d.innerHTML=c.n===20?'<b>20</b><span>WHOT</span>':'<i>'+c.n+'</i>'+svg(c.s,big?46:38)+'<i>'+c.n+'</i>';return d}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+
+function newGame(){
+ var d=[];for(var s in NUMS)NUMS[s].forEach(function(n){d.push({s:s,n:n})});for(var i=0;i<5;i++)d.push({s:'whot',n:20});shuffle(d);
+ G={mkt:d,disc:[],h:[[],[]],turn:0,pend:0,pn:0,shape:'',over:false,choosing:false,msg:'Your turn. Match the shape or number.'};
+ for(var p=0;p<2;p++)for(i=0;i<6;i++)G.h[p].push(G.mkt.pop());
+ var k=G.mkt.findIndex(function(c){return [1,2,5,8,14,20].indexOf(c.n)<0});var f=G.mkt.splice(k,1)[0];G.disc.push(f);G.shape=f.s;
+ hide('end');hide('menu');render();
+}
+function refill(){if(G.mkt.length)return;var t=G.disc.pop();G.mkt=shuffle(G.disc);G.disc=[t]}
+function draw(p,n){for(var i=0;i<n;i++){refill();if(!G.mkt.length)break;G.h[p].push(G.mkt.pop())}}
+function topc(){return G.disc[G.disc.length-1]}
+function ok(c){if(G.pend)return S.def&&c.n===G.pn;return c.n===20||c.s===G.shape||c.n===topc().n}
+function nm(p){return p?'Computer':'You'}
+
+function play(p,i){
+ var c=G.h[p].splice(i,1)[0];G.disc.push(c);G.shape=c.s;beep(p?330:520,.08);
+ if(!G.h[p].length){return finish(p)}
+ if(c.n===20){
+  if(p===0){G.choosing=true;render();show('pick');return}
+  G.shape=cpuShape();G.msg='Computer played Whot and chose <b>'+G.shape+'</b>.';return after(p,c)}
+ after(p,c);
+}
+function after(p,c){
+ var o=1-p,nx=o,m=G.msg;
+ if(c.n===1||c.n===8){nx=p;m=nm(p)+(p?' plays':' play')+' again ('+(c.n===1?'Hold on':'Suspension')+').'}
+ else if(c.n===2||c.n===5){G.pend+=c.n===2?2:3;G.pn=c.n;m=(p?'Computer':'You')+' played '+c.n+'. '+(o?'Computer must':'You must')+' pick <b>'+G.pend+'</b>'+(S.def?' or defend with a '+c.n:'')+'.'}
+ else if(c.n===14){draw(o,1);nx=p;m='General market! '+nm(o)+(o?' draws':' draw')+' 1. '+nm(p)+(p?' plays':' play')+' again.'}
+ else if(c.n!==20){m=p?'Computer played '+c.s+' '+c.n+'. Your turn.':'Computer is thinking...'}
+ if(p===0&&c.n===20)m='You chose <b>'+G.shape+'</b>. Computer is thinking...';
+ if(p===1&&c.n===20)m+=' Your turn.';
+ G.turn=nx;G.msg=m;render();if(nx===1)soon();
+}
+function drawTurn(p){var n=G.pend||1;draw(p,n);var was=G.pend;G.pend=0;G.pn=0;beep(220,.1);
+ G.msg=nm(p)+(p?' draws ':' draw ')+n+(was?' cards.':' card.')+(p?' Your turn.':' Computer plays.');G.turn=1-p;render();if(G.turn===1)soon()}
+function finish(p){G.over=true;if(p===0)S.w++;else S.l++;save();render();beep(p?200:760,.4);
+ $('et').textContent=p?'Computer wins':'You win!';$('eb').textContent=p?'Better luck next time. Try again.':'You finished all your cards.';setTimeout(function(){show('end')},500)}
+
+function cpuShape(){var ct={};G.h[1].forEach(function(c){if(c.s!=='whot')ct[c.s]=(ct[c.s]||0)+1});var b=null,m=0;for(var s in ct)if(ct[s]>m){m=ct[s];b=s}return b||Object.keys(NUMS)[Math.floor(Math.random()*5)]}
+function soon(){setTimeout(cpu,S.lv==='easy'?1100:850)}
+function cpu(){
+ if(G.over||G.turn!==1||G.choosing)return;
+ var h=G.h[1],pl=[];h.forEach(function(c,i){if(ok(c))pl.push(i)});
+ if(!pl.length)return drawTurn(1);
+ var pick;
+ if(S.lv==='easy')pick=pl[Math.floor(Math.random()*pl.length)];
+ else{var best=-99;pl.forEach(function(i){var c=h[i],sc=Math.random();
+   var same=h.filter(function(x){return x.s===c.s}).length;sc+=same*.5;
+   if(S.lv==='hard'){if(c.n===2||c.n===5||c.n===14)sc+=3;if(c.n===1||c.n===8)sc+=2;if(c.n===20&&h.length>2)sc-=6}
+   else if(c.n===20)sc-=3;
+   if(sc>best){best=sc;pick=i}})}
+ play(1,pick);
+}
+
+function render(){
+ var cp=$('cpu');cp.innerHTML='';var n=G.h[1].length;for(var i=0;i<Math.min(n,9);i++){var b=document.createElement('div');b.className='back';cp.appendChild(b)}
+ var cn=document.createElement('span');cn.id='cpuN';cn.textContent='Computer: '+n+' cards';cp.appendChild(cn);
+ $('mn').textContent=G.mkt.length+' left';
+ var t=$('top');t.innerHTML='';t.appendChild(cardEl(topc(),true));
+ $('chip').innerHTML='Shape '+(G.shape&&G.shape!=='whot'?svg(G.shape,20)+' '+G.shape:'any');
+ var live=G.turn===0&&!G.over&&!G.choosing;$('mkt').className='back big'+(live?' live':'');
+ $('info').innerHTML=(G.pend&&G.turn===0&&!G.over?'<b>Pick '+G.pend+'.</b> '+(S.def?'Play a '+G.pn+' to defend, or tap Market.':'Tap Market to draw.')+'<br>':'')+G.msg;
+ var me=$('me');me.innerHTML='';
+ G.h[0].forEach(function(c,i){var e=cardEl(c,false,'button');var can=live&&ok(c);e.className+=can?' ok':' no';if(can)e.onclick=function(){play(0,i)};else e.disabled=false;me.appendChild(e)});
+ $('score').textContent='Wins '+S.w+'  Losses '+S.l;
+}
+function show(i){$(i).classList.add('on')}function hide(i){$(i).classList.remove('on')}
+function mkt(){if(G.turn!==0||G.over||G.choosing)return;drawTurn(0)}
+$('mkt').onclick=mkt;$('mkt').onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();mkt()}};
+var sh=$('shapes');Object.keys(NUMS).forEach(function(s){var b=document.createElement('button');b.innerHTML=svg(s,34);b.setAttribute('aria-label',s);b.onclick=function(){G.shape=s;G.choosing=false;hide('pick');after(0,{n:20,s:'whot'})};sh.appendChild(b)});
+function menuUI(){var l=$('lv');l.innerHTML='';['easy','medium','hard'].forEach(function(v){var b=document.createElement('button');b.className='btn'+(S.lv===v?' sel':' alt');b.textContent=v[0].toUpperCase()+v.slice(1);b.onclick=function(){S.lv=v;save();menuUI()};l.appendChild(b)});
+ $('rd').textContent='Defend pick 2/3: '+(S.def?'On':'Off');$('rs').textContent='Sound: '+(S.snd?'On':'Off');$('st').textContent='Your record: '+S.w+' wins, '+S.l+' losses.'}
+$('rd').onclick=function(){S.def=!S.def;save();menuUI();render()};$('rs').onclick=function(){S.snd=!S.snd;save();menuUI()};
+$('mb').onclick=function(){menuUI();show('menu')};$('cl').onclick=function(){hide('menu')};$('ng').onclick=newGame;$('again').onclick=newGame;
+if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+newGame();
+})();
+</script></body></html>
