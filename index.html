@@ -87,21 +87,53 @@ button{font:inherit;cursor:pointer}
 input{font:inherit;padding:8px;border-radius:8px;border:2px solid var(--ink);width:100%}
 details{margin-top:12px}
 @media (max-height:660px){#cpu{height:62px}#cpu .back{--w:38px}.card,.back{--w:58px}#me{min-height:120px}}
+
+:root{--glass:#fff8e712;--line:#f2b13459}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 35%,#000a 100%);pointer-events:none}
+#app{position:relative}
+h1{font:italic 900 30px Georgia,serif;text-shadow:0 2px 0 #7a4a00,0 4px 12px #0008}
+.chips{flex:1;display:flex;gap:6px;justify-content:flex-end}
+.chip,.ib{background:var(--glass);border:1px solid var(--line);border-radius:20px;backdrop-filter:blur(6px);font-weight:700}
+.chip{padding:5px 10px;font-size:13px}.ib{padding:8px 16px;transition:transform .1s}.ib:active{transform:scale(.95)}
+#lvl{display:flex;align-items:center;gap:8px;margin:6px 0 2px;font-size:12px}#lvn{color:var(--gold);font-weight:900}
+#lvl i{flex:1;height:6px;border-radius:6px;background:#0006;overflow:hidden}#lvl u{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#ffd36b);transition:width .5s}
+#score{background:none;padding:0;opacity:.8}
+.lab{background:var(--glass);border:1px solid var(--line);padding:3px 14px 3px 4px;font-weight:700}
+.lab::before{content:attr(data-i);width:26px;height:26px;border-radius:50%;background:linear-gradient(145deg,#ffd36b,#c9891a);color:#3a1d00;display:flex;align-items:center;justify-content:center;font-weight:900;text-shadow:none}
+#pl::before{background:linear-gradient(145deg,#ff6b81,#b3122b);color:#fff}
+.who{position:relative;display:flex;justify-content:center}
+#say{position:absolute;top:100%;left:50%;transform:translate(-50%,-4px) scale(.8);background:var(--cream);color:var(--ink);padding:6px 12px;border-radius:14px;font-size:13px;font-weight:700;white-space:nowrap;opacity:0;pointer-events:none;transition:.25s;z-index:5;text-shadow:none;box-shadow:0 4px 14px #0007}
+#say.on{opacity:1;transform:translate(-50%,6px) scale(1)}
+#mid{position:relative}#mid>*{position:relative}
+#mid::before{content:"";position:absolute;inset:4px 2%;border-radius:50%;border:2px solid var(--line);background:radial-gradient(ellipse,#ffffff14,transparent 72%)}
+.card{box-shadow:0 1px 0 #fff inset,0 6px 14px #000a,0 0 0 1px #0005}
+#me .card.ok{box-shadow:0 0 0 3px var(--gold),0 0 18px #f2b134aa,0 8px 14px #000a}
+#info{background:#0004;border-radius:14px;margin:0 4px}
+#act{justify-content:flex-end;align-items:center;flex-wrap:wrap}.lh #act{justify-content:flex-start}.lh header{flex-direction:row-reverse}
+#lc{background:var(--red);animation:p2 .6s infinite alternate}@keyframes p2{to{transform:scale(1.08)}}
+#em{display:flex;gap:4px}#em button{background:var(--glass);border:1px solid var(--line);border-radius:50%;width:36px;height:36px;font-size:18px;padding:0}
+#toast{font-size:20px}
+.sheet{background:linear-gradient(#fff8e7,#f6ebcc);border:2px solid var(--gold);border-radius:22px}
+.tabs{display:flex;gap:4px;background:#2a1d1214;border-radius:12px;padding:3px;margin-bottom:8px}.tabs button{flex:1;border:0;background:none;padding:8px;border-radius:10px;font-weight:800;color:var(--ink)}.tabs .on{background:var(--ink);color:var(--gold)}
+.bk{flex-wrap:wrap}.pk{display:flex;flex-direction:column;align-items:center;font-size:11px}
+.bd{display:inline-block;background:var(--ink);color:var(--gold);border-radius:12px;padding:3px 10px;margin:2px;font-size:12px}.bd.off{opacity:.3}
+.hi{display:flex;justify-content:space-between;font-size:13px;border-bottom:1px dashed #0002;padding:3px 0}
 </style></head>
 <body data-back="0">
 <div id="app">
-<header><h1>Whot</h1><span id="score"></span><button class="ib" id="mb">Settings</button></header>
-<div class="lab" id="cl"></div>
+<header><h1>Whot</h1><div class="chips"><span class="chip" id="coins"></span><span class="chip" id="stk"></span></div><button class="ib" id="mb">Menu</button></header>
+<div id="lvl"><b id="lvn"></b><i><u id="xp"></u></i><span id="score"></span></div>
+<div class="who"><div class="lab" id="cl"></div><div id="say"></div></div>
 <section id="cpu" aria-label="Computer's cards"></section>
 <section id="mid"><div class="pile"><div class="back big" id="mkt" role="button" tabindex="0" aria-label="Draw from market"></div><span id="mn"></span></div><div class="pile"><div id="top"></div><div id="chip"></div></div></section>
 <div id="info" aria-live="polite"></div>
-<div id="act"><button class="ib" id="hb">Hint</button></div>
+<div id="act"><button class="ib" id="lc" style="display:none">Last card!</button><span id="em"></span><button class="ib" id="hb">Hint</button></div>
 <div class="lab" id="pl"></div>
 <section id="me" aria-label="Your cards"></section>
 </div>
 <div id="toast"></div>
 <div class="modal" id="pick"><div class="sheet"><h2>Choose a shape</h2><div class="shapes" id="shapes"></div></div></div>
-<div class="modal" id="end"><div class="sheet"><h2 id="et"></h2><p id="eb"></p><div class="row"><button class="btn" id="again">Play again</button></div></div></div>
+<div class="modal" id="end"><div class="sheet"><h2 id="et"></h2><p id="eb"></p><div class="row"><button class="btn" id="again">Play again</button><button class="btn alt" id="shr">Share</button></div></div></div>
 <div class="modal" id="menu"><div class="sheet" id="sheet"></div></div>
 
 <script>
@@ -113,7 +145,7 @@ var NUMS={circle:[1,2,3,4,5,7,8,10,11,12,13,14],triangle:[1,2,3,4,5,7,8,10,11,12
 var NAMES=['Tunde','Amaka','Chidi','Zainab','Emeka','Ngozi','Bayo','Fatima'];
 var $=function(i){return document.getElementById(i)};
 var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-var S={lv:'medium',def:true,mus:true,sfx:true,vib:true,vol:.5,bg:0,back:0,spd:1,start:6,name:'You',w:0,l:0};
+var RND=Math.random;var S={mstyle:'songs',coins:0,xp:0,streak:0,last:"",own:[],hist:[],ach:{},dc:{},ws:0,hand:"r",csz:1,pen:true,p14:false,seen:0,lv:'medium',def:true,mus:true,sfx:true,vib:true,vol:1.2,bg:0,back:0,spd:1,start:6,name:'You',w:0,l:0};
 try{var sv=JSON.parse(localStorage.getItem('whot-s2')||'null');if(sv)for(var k in sv)S[k]=sv[k]}catch(e){}
 function save(){try{localStorage.setItem('whot-s2',JSON.stringify(S))}catch(e){}}
 
@@ -130,11 +162,11 @@ var BGS=[
 {n:'Wooden table',c:'linear-gradient(#0002,#0006),repeating-linear-gradient(90deg,#7a4e2a 0 46px,#6a4222 46px 50px,#8a5a30 50px 96px,#5f3b1d 96px 100px)'},
 {n:'Golden night',c:'repeating-linear-gradient(45deg,#ffffff08 0 2px,transparent 2px 14px),radial-gradient(circle at 50% 35%,#6b5114,#161004 72%)'}
 ];
-function applyBg(){document.body.style.background=BGS[S.bg].c;document.body.setAttribute('data-back',S.back);var m=document.querySelector('meta[name=theme-color]');}
+function applyBg(){document.body.style.background=BGS[S.bg].c;document.body.style.setProperty('--bk',BKS[S.back]);document.body.classList.toggle('lh',S.hand==='l');var m=document.querySelector('meta[name=theme-color]');}
 
 /* ---------- audio: music + effects made in code ---------- */
 var AC,MG,NB,mt=null,st=0,nt=0;
-function ac(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.connect(AC.destination);var b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;NB=b}if(AC.state==='suspended')AC.resume();MG.gain.value=S.vol*.7;return AC}
+function ac(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();var cm=AC.createDynamicsCompressor();MG.connect(cm);cm.connect(AC.destination);var b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;NB=b}if(AC.state==='suspended')AC.resume();MG.gain.value=S.vol*1.2;return AC}
 function tone(f,t,d,type,v,dest){var a=ac(),o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||a.destination);o.start(t);o.stop(t+d+.05);return o}
 function nz(t,d,v,hp,dest){var a=ac(),s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=NB;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(dest||a.destination);s.start(t);s.stop(t+d+.02)}
 function sfx(n){if(!S.sfx)return;try{var t=ac().currentTime;
@@ -155,8 +187,14 @@ function sched(){var a=ac();while(nt<a.currentTime+.3){var s=st%16,bar=(st>>4)%4
  if(s%4===2&&Math.random()<.65)tone(PEN[Math.floor(Math.random()*PEN.length)],t,.32,'sine',.13,MG);
  if(s===0){tone(BASS[bar]*2,t,1.6,'sine',.07,MG);tone(BASS[bar]*3,t,1.6,'sine',.04,MG)}
  nt+=SP;st++}}
-function musicOn(){if(mt||!S.mus)return;try{ac();nt=AC.currentTime+.1;mt=setInterval(sched,100)}catch(e){}}
-function musicOff(){clearInterval(mt);mt=null}
+function synthOn(){if(mt||!S.mus)return;try{ac();nt=AC.currentTime+.1;mt=setInterval(sched,100)}catch(e){}}
+var SONGS=['music1.mp3','music2.mp3','music3.mp3'],au=null,si=0,bad=false;
+function songOn(){try{ac();if(!au){au=new Audio();au.preload='auto';AC.createMediaElementSource(au).connect(MG);
+ au.onended=function(){si=(si+1)%SONGS.length;au.src=SONGS[si];au.play().catch(function(){})};
+ au.onerror=function(){if(si>0){si=0;au.src=SONGS[0];au.play().catch(function(){})}else{bad=true;toast('No song file found, using built-in music');synthOn()}}}
+ if(!au.src)au.src=SONGS[si];au.play().catch(function(){})}catch(e){}}
+function musicOn(){if(!S.mus)return;if(S.mstyle==='songs'&&!bad)songOn();else synthOn()}
+function musicOff(){clearInterval(mt);mt=null;if(au)au.pause()}
 document.addEventListener('pointerdown',function(){if(S.mus)musicOn()});
 document.addEventListener('visibilitychange',function(){if(document.hidden)musicOff();else if(S.mus&&AC)musicOn()});
 function vib(){if(S.vib&&navigator.vibrate)try{navigator.vibrate(12)}catch(e){}}
@@ -168,7 +206,7 @@ function cardEl(c,cls,tag){var d=document.createElement(tag||'div');d.className=
  else{d.style.setProperty('--c',COL[c.s]);d.innerHTML='<div class="cn"><b>'+c.n+'</b>'+svg(c.s)+'</div><div class="mid">'+svg(c.s)+'</div><div class="cn r"><b>'+c.n+'</b>'+svg(c.s)+'</div>'}
  return d}
 function backEl(w){var d=document.createElement('div');d.className='back';if(w)d.style.setProperty('--w',w+'px');return d}
-function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(RND()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 
 /* ---------- animation: a card flies from where it is to where it goes ---------- */
 function fly(card,from,to,dur,cb,flip){
@@ -186,21 +224,22 @@ var tt;function toast(m){var t=$('toast');t.textContent=m;t.style.display='block
 
 /* ---------- game ---------- */
 var G,lastTop='';
-function newGame(){
+function newGame(dly){RND=dly===true?seeded():Math.random;
  var d=[];for(var s in NUMS)NUMS[s].forEach(function(n){d.push({s:s,n:n})});for(var i=0;i<5;i++)d.push({s:'whot',n:20});shuffle(d);
- G={mkt:d,disc:[],h:[[],[]],turn:0,pend:0,pn:0,shape:'',over:false,choosing:false,busy:false,deal:true,cn:NAMES[Math.floor(Math.random()*NAMES.length)],msg:'Your turn. Match the shape or number, or tap the Market to draw.'};
+ G={mkt:d,disc:[],h:[[],[]],turn:0,pend:0,pn:0,shape:'',over:false,choosing:false,busy:false,deal:true,daily:dly===true,drew:false,mv:0,lcW:0,cn:NAMES[Math.floor(RND()*NAMES.length)],msg:'Your turn. Match the shape or number, or tap the Market to draw.'};
  for(var p=0;p<2;p++)for(i=0;i<S.start;i++)G.h[p].push(G.mkt.pop());
  var k=G.mkt.findIndex(function(c){return [1,2,5,8,14,20].indexOf(c.n)<0});var f=G.mkt.splice(k,1)[0];G.disc.push(f);G.shape=f.s;
- hide('end');hide('menu');lastTop='';render();G.deal=false;
+ hide('end');hide('menu');lastTop='';render();G.deal=false;RND=Math.random;
 }
 function refill(){if(G.mkt.length)return;var t=G.disc.pop();G.mkt=shuffle(G.disc);G.disc=[t]}
 function draw(p,n){for(var i=0;i<n;i++){refill();if(!G.mkt.length)break;G.h[p].push(G.mkt.pop())}}
 function topc(){return G.disc[G.disc.length-1]}
-function ok(c){if(G.pend)return S.def&&c.n===G.pn;return c.n===20||c.s===G.shape||c.n===topc().n}
+function pv(c){return c.n===14&&S.p14?2:c.n}
+function ok(c){if(G.pend)return S.def&&pv(c)===G.pn;return c.n===20||c.s===G.shape||c.n===topc().n}
 function who(p,a,b){return (p?G.cn:'You')+' '+(p?b:a)}
 function live(){return G.turn===0&&!G.over&&!G.choosing&&!G.busy}
 
-function humanPlay(i,el){if(!live())return;var c=G.h[0][i];if(!ok(c))return;G.busy=true;el.style.visibility='hidden';vib();sfx('play');
+function humanPlay(i,el){if(!live())return;var c=G.h[0][i];if(!ok(c))return;G.busy=true;G.mv++;el.style.visibility='hidden';vib();sfx('play');
  fly(c,rc(el),topRect(),300,function(){G.busy=false;play(0,i)})}
 function play(p,i){
  var c=G.h[p].splice(i,1)[0];G.disc.push(c);G.shape=c.s;
@@ -210,24 +249,24 @@ function play(p,i){
   G.shape=cpuShape()}
  after(p,c)}
 function after(p,c){
- var o=1-p,nx=o,m='';
- if(G.h[p].length===1){toast(p?G.cn+': Last card!':'Last card!');sfx('last')}
+ var o=1-p,nx=o,m='',v=pv(c);
+ if(G.h[p].length===1){if(p===0&&S.pen){var gg=G;G.lcW=1;setTimeout(function(){if(gg===G&&G.lcW&&!G.over){G.lcW=0;draw(0,2);G.msg='You forgot "Last card"! Draw 2.';say('Ehn ehn! You forgot to shout!');render()}},2600)}else toast(p?G.cn+': Last card!':'Last card!');sfx('last')}
  if(c.n===1||c.n===8){nx=p;m=who(p,'play','plays')+' again ('+(c.n===1?'Hold on':'Suspension')+').';sfx('special')}
- else if(c.n===2||c.n===5){G.pend+=c.n===2?2:3;G.pn=c.n;m=(p?G.cn:'You')+' played '+c.n+'. '+(o?G.cn+' must':'You must')+' pick <b>'+G.pend+'</b>'+(S.def?' or defend with a '+c.n:'')+'.';sfx('special')}
+ else if(v===2||v===5){G.pend+=v===2?2:3;G.pn=v;m=(p?G.cn:'You')+' played '+c.n+'. '+(o?G.cn+' must':'You must')+' pick <b>'+G.pend+'</b>'+(S.def?' or defend with a '+c.n:'')+'.';sfx('special')}
  else if(c.n===14){draw(o,1);nx=p;m='General market! '+(o?G.cn+' draws':'You draw')+' 1. '+who(p,'play','plays')+' again.';sfx('special')}
  else if(c.n===20){m=who(p,'choose','chooses')+' <b>'+G.shape+'</b>.';sfx('special')}
  else if(p)m=G.cn+' played '+c.s+' '+c.n+'.';
  if(nx===0&&p===1)m+=' Your turn.';
- G.turn=nx;G.msg=m;render();if(nx===1)soon()}
+ if(p===1&&(v===2||v===5||v===14||v===1||v===8)&&Math.random()<.7)say(pk(LN.sp));if(p===0&&(v===2||v===5))say(pk(LN.hit));G.turn=nx;G.msg=m;render();if(nx===1)soon()}
 function drawTurn(p){
  var n=G.pend||1,was=G.pend;G.busy=true;var from=rc($('mkt')),tg=rc(p?$('cpu'):$('me')),cnt=Math.min(n,5),dn=0;
  var to={left:tg.left+tg.width/2-from.width*.35,top:tg.top+tg.height/2-from.height*.35,width:from.width*.7,height:from.height*.7};
  if(p===0)to.top=tg.top+30;
  for(var i=0;i<cnt;i++)(function(i){setTimeout(function(){sfx('draw');fly(null,from,to,300,function(){if(++dn===cnt)fin()})},i*150*S.spd)})(i);
- function fin(){draw(p,n);G.pend=0;G.pn=0;G.busy=false;G.turn=1-p;
+ function fin(){if(p&&Math.random()<.5)say(pk(LN.dr));draw(p,n);G.pend=0;G.pn=0;G.busy=false;G.turn=1-p;
   G.msg=(p?G.cn+' draws ':'You draw ')+n+(was?' cards.':' card.')+(p?' Your turn.':'');render();if(G.turn===1)soon()}}
-function finish(p){G.over=true;if(p===0)S.w++;else S.l++;save();render();sfx(p?'lose':'win');if(!p)confetti();
- $('et').textContent=p?G.cn+' wins':'You win!';$('eb').textContent=p?'Better luck next time. Try again.':'You finished all your cards.';setTimeout(function(){show('end')},900)}
+function finish(p){G.over=true;if(p===0)S.w++;else S.l++;reward(p);save();render();sfx(p?'lose':'win');if(!p)confetti();
+ $('et').textContent=p?G.cn+' wins':'You win!';$('eb').textContent=(p?'Better luck next time. ':'You finished all your cards. ')+G.rw;setTimeout(function(){show('end')},900)}
 
 function cpuShape(){var ct={};G.h[1].forEach(function(c){if(c.s!=='whot')ct[c.s]=(ct[c.s]||0)+1});var b=null,m=0;for(var s in ct)if(ct[s]>m){m=ct[s];b=s}return b||Object.keys(NUMS)[Math.floor(Math.random()*5)]}
 function soon(){G.think=true;render();setTimeout(cpu,(S.lv==='easy'?1400:1100)*S.spd)}
@@ -251,22 +290,22 @@ function hint(){if(!live()){return}sfx('tap');var best=-1,bi=-1;G.h[0].forEach(f
 function render(){
  var cp=$('cpu');cp.innerHTML='';var n=G.h[1].length,sh=Math.min(n,10);
  for(var i=0;i<sh;i++){var b=backEl();b.style.setProperty('--r',((i-(sh-1)/2)*5)+'deg');cp.appendChild(b)}
- var cl=$('cl');cl.className='lab'+(G.turn===1&&!G.over?' on':'');cl.innerHTML=G.cn+' · '+n+' card'+(n===1?'':'s')+(G.think?' <span class="dots"><i></i><i></i><i></i></span>':'');
+ var cl=$('cl');cl.dataset.i=G.cn[0];cl.className='lab'+(G.turn===1&&!G.over?' on':'');cl.innerHTML=G.cn+' · '+n+' card'+(n===1?'':'s')+(G.think?' <span class="dots"><i></i><i></i><i></i></span>':'');
  var t=topc(),key=t.s+t.n+G.disc.length;var tp=$('top');tp.innerHTML='';var te=cardEl(t,'big');if(key!==lastTop&&lastTop)te.classList.add('land');lastTop=key;tp.appendChild(te);
  $('mn').textContent=G.mkt.length+' left';
  $('chip').innerHTML='Shape '+(G.shape&&G.shape!=='whot'?'<span style="width:20px;height:20px;display:inline-flex">'+svg(G.shape)+'</span> '+G.shape:'any');
  var lv=live();$('mkt').className='back big'+(lv?' live':'');
  $('info').innerHTML=(G.pend&&G.turn===0&&!G.over?'<b>Pick '+G.pend+'.</b> '+(S.def?'Play a '+G.pn+' to defend, or tap Market.':'Tap Market to draw.')+'<br>':'')+G.msg;
- var pl=$('pl');pl.className='lab'+(lv?' on':'');pl.textContent=(S.name||'You')+' · '+G.h[0].length+' cards';
+ var pl=$('pl');pl.dataset.i=(S.name||'You')[0].toUpperCase();pl.className='lab'+(lv?' on':'');pl.textContent=(S.name||'You')+' · '+G.h[0].length+' cards';
  $('hb').style.visibility=lv?'visible':'hidden';
- var me=$('me');me.innerHTML='';var nc=G.h[0].length,cw=me.clientWidth>0&&window.innerHeight<661?58:66,av=me.clientWidth-20,step=nc>1?Math.max(24,Math.min(cw+8,(av-cw)/(nc-1))):0;
- G.h[0].forEach(function(c,i){var e=cardEl(c,'','button');var can=lv&&ok(c);e.classList.add(can?'ok':'no');if(i>0)e.style.marginLeft=(step-cw)+'px';
+ var me=$('me');me.innerHTML='';var nc=G.h[0].length,cw=Math.round((window.innerHeight<661?58:66)*S.csz),av=me.clientWidth-20,step=nc>1?Math.max(24,Math.min(cw+8,(av-cw)/(nc-1))):0;
+ G.h[0].forEach(function(c,i){var e=cardEl(c,'','button');e.style.setProperty('--w',cw+'px');var can=lv&&ok(c);e.classList.add(can?'ok':'no');if(i>0)e.style.marginLeft=(step-cw)+'px';
   if(G.deal){e.classList.add('deal');e.style.animationDelay=(i*70)+'ms'}
   if(can)e.onclick=function(){humanPlay(i,e)};me.appendChild(e)});
- $('score').textContent='Wins '+S.w+' · Losses '+S.l}
+ $('score').textContent=S.w+'W · '+S.l+'L · '+(S.w+S.l?Math.round(100*S.w/(S.w+S.l)):0)+'%';hud();saveG()}
 
 function show(i){$(i).classList.add('on')}function hide(i){$(i).classList.remove('on')}
-function mkt(){if(!live())return;sfx('tap');drawTurn(0)}
+function mkt(){if(!live())return;sfx('tap');G.drew=true;drawTurn(0)}
 $('mkt').onclick=mkt;$('mkt').onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();mkt()}};
 $('hb').onclick=hint;
 var shp=$('shapes');Object.keys(NUMS).forEach(function(s){var b=document.createElement('button');b.innerHTML='<span style="width:34px;height:34px;display:block">'+svg(s)+'</span>';b.setAttribute('aria-label',s);b.onclick=function(){G.shape=s;G.choosing=false;hide('pick');after(0,{n:20,s:'whot'})};shp.appendChild(b)});
@@ -274,27 +313,50 @@ var shp=$('shapes');Object.keys(NUMS).forEach(function(s){var b=document.createE
 /* ---------- settings ---------- */
 function tg(k,l){return '<div class="row"><button class="btn '+(S[k]?'sel':'alt')+'" data-k="'+k+'" data-t="1">'+l+': '+(S[k]?'On':'Off')+'</button></div>'}
 function opts(k,arr){return '<div class="row">'+arr.map(function(a){return '<button class="btn '+(String(S[k])===String(a[0])?'sel':'alt')+'" data-k="'+k+'" data-v="'+a[0]+'">'+a[1]+'</button>'}).join('')+'</div>'}
-function menuUI(){
- var h='<h2>Settings</h2><h3>Sound</h3>'+tg('mus','Music')+opts('vol',[[.25,'Quiet'],[.5,'Medium'],[.8,'Loud']])+tg('sfx','Sound effects')+tg('vib','Vibration')
- +'<h3>Table background</h3><div class="grid">'+BGS.map(function(b,i){return '<button class="th'+(S.bg===i?' sel':'')+'" data-k="bg" data-v="'+i+'" aria-label="'+b.n+'"><span>'+b.n+'</span></button>'}).join('')+'</div>'
- +'<h3>Card back</h3><div class="bk">'+[0,1,2].map(function(i){return '<div class="back'+(S.back===i?' sel':'')+'" data-k="back" data-v="'+i+'" style="--bk:'+['repeating-linear-gradient(45deg,#a31d2e 0 6px,#8b1626 6px 12px)','repeating-linear-gradient(135deg,#1e4fb0 0 6px,#173d8a 6px 12px)','repeating-conic-gradient(#0e7a58 0 25%,#0b5f45 0 50%) 0 0/14px 14px'][i]+'"></div>'}).join('')+'</div>'
- +'<h3>Computer level</h3>'+opts('lv',[['easy','Easy'],['medium','Medium'],['hard','Hard']])
- +'<h3>Computer speed</h3>'+opts('spd',[[1.5,'Slow'],[1,'Normal'],[.6,'Fast']])
- +'<h3>Cards at the start</h3>'+opts('start',[[5,'5'],[6,'6'],[7,'7']])
- +'<h3>House rule</h3>'+tg('def','Defend pick 2 / pick 3')
- +'<h3>Your name</h3><input id="nm" maxlength="14" value="'+(S.name||'').replace(/"/g,'')+'">'
- +'<h3>Your record</h3><p>'+S.w+' wins, '+S.l+' losses. <button class="btn alt" data-r="1">Reset</button></p>'
- +'<details><summary><b>How to play</b></summary><ul><li>Play a card that matches the top card\'s <b>shape</b> or <b>number</b>.</li><li>No match? Tap the <b>Market</b> to draw 1 card. Your turn then ends.</li><li><b>1</b> Hold on and <b>8</b> Suspension: play again.</li><li><b>2</b> Pick two, <b>5</b> Pick three. With defend on, answer with the same number to pass it back.</li><li><b>14</b> General market: the other player draws 1, you play again.</li><li><b>20 Whot</b> plays on anything and lets you choose the shape.</li><li>Be first to finish all your cards. Use <b>Hint</b> if you are stuck.</li></ul></details>'
- +'<div class="row" style="margin-top:14px"><button class="btn" data-n="1">New game</button><button class="btn alt" data-c="1">Close</button></div>';
- $('sheet').innerHTML=h;[].forEach.call(document.querySelectorAll('.th'),function(t,i){t.style.background=BGS[i].c});var nm=$('nm');nm.onchange=function(){S.name=nm.value.trim()||'You';save();render()}}
-$('sheet').addEventListener('click',function(e){var b=e.target.closest('[data-k],[data-n],[data-c],[data-r]');if(!b)return;sfx('tap');
- if(b.dataset.n){return newGame()}if(b.dataset.c){return hide('menu')}if(b.dataset.r){S.w=0;S.l=0;save();menuUI();return render()}
- var k=b.dataset.k;if(b.dataset.t)S[k]=!S[k];else{var v=b.dataset.v;S[k]=(v!==''&&!isNaN(v))?Number(v):v}
- save();if(k==='mus'){S.mus?musicOn():musicOff()}if(k==='vol'&&MG)MG.gain.value=S.vol*.7;
+var TAB='set';
+function menuUI(){var T=[['set','Settings'],['shop','Shop'],['me','Profile']],h='<div class="tabs">'+T.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>';
+if(TAB==='set')h+='<h3>Sound</h3>'+tg('mus','Music')+opts('mstyle',[['songs','My songs'],['synth','Built-in']])+opts('vol',[[.3,'Quiet'],[.6,'Medium'],[1.2,'Loud'],[2,'Max']])+tg('sfx','Sound effects')+tg('vib','Vibration')+'<h3>Computer</h3>'+opts('lv',[['easy','Easy'],['medium','Medium'],['hard','Hard']])+opts('spd',[[1.5,'Slow'],[1,'Normal'],[.6,'Fast']])+'<h3>House rules</h3>'+opts('start',[[5,'5 cards'],[6,'6 cards'],[7,'7 cards']])+tg('def','Pick-two/three stacking')+tg('p14','14 is pick two')+tg('pen','"Last card" penalty')+'<h3>Display</h3>'+opts('csz',[[.9,'Small'],[1,'Normal'],[1.15,'Big']])+opts('hand',[['r','Right-hand'],['l','Left-hand']])+'<h3>Your name</h3><input id="nm" maxlength="14" value="'+(S.name||'').replace(/"/g,'')+'"><details><summary><b>How to play</b></summary><ul><li>Match the top card\'s <b>shape</b> or <b>number</b>, or tap the <b>Market</b>.</li><li><b>1</b> Hold on, <b>8</b> Suspension: play again.</li><li><b>2</b> Pick two, <b>5</b> Pick three (stack to pass it back).</li><li><b>14</b> General market. <b>20</b> Whot: pick any shape.</li><li>One card left? Tap <b>Last card!</b></li></ul></details>';
+else if(TAB==='shop')h+='<p><b>🪙 '+S.coins+' coins</b>. Win games and daily gifts to earn more.</p><h3>Table backgrounds</h3><div class="grid">'+BGS.map(function(b,i){return '<button class="th'+(S.bg===i?' sel':'')+'" data-k="bg" data-v="'+i+'"><span>'+b.n+(own('bg',i)?'':' 🪙'+BP[i])+'</span></button>'}).join('')+'</div><h3>Card backs</h3><div class="bk">'+BKS.map(function(b,i){return '<div class="pk"><div class="back'+(S.back===i?' sel':'')+'" data-k="back" data-v="'+i+'" style="--bk:'+b+'"></div>'+(own('back',i)?'✓':'🪙'+KP[i])+'</div>'}).join('')+'</div>';
+else{var t=S.w+S.l;h+='<p>Level <b>'+lvl()+'</b> · '+S.xp%100+'/100 XP<br>'+S.w+' wins, '+S.l+' losses · win rate <b>'+(t?Math.round(100*S.w/t):0)+'%</b><br>🔥 Streak: '+S.streak+' day'+(S.streak==1?'':'s')+'</p><h3>Badges</h3><p>'+ACH.map(function(a){return '<span class="bd'+(S.ach[a[0]]?'':' off')+'">'+a[1]+'</span>'}).join('')+'</p><h3>Last games</h3>'+(S.hist.length?S.hist.map(function(g){return '<div class="hi"><span>'+(g.w?'Won':'Lost')+(g.d?' · Daily':'')+'</span><span>'+g.m+' moves</span></div>'}).join(''):'<p>No games yet.</p>')+'<div class="row"><button class="btn" data-sh="1">Share</button><button class="btn alt" data-r="1">Reset record</button></div>'}
+h+='<div class="row" style="margin-top:14px"><button class="btn" data-n="1">New game</button><button class="btn alt" data-d="1">Daily challenge</button><button class="btn alt" data-c="1">Close</button></div>';
+$('sheet').innerHTML=h;[].forEach.call(document.querySelectorAll('.th'),function(t,i){t.style.background=BGS[i].c});var nm=$('nm');if(nm)nm.onchange=function(){S.name=nm.value.trim()||'You';save();render()}}
+$('sheet').addEventListener('click',function(e){var b=e.target.closest('[data-k],[data-n],[data-c],[data-r],[data-tab],[data-d],[data-sh]');if(!b)return;sfx('tap');
+ if(b.dataset.tab){TAB=b.dataset.tab;return menuUI()}if(b.dataset.d){return newGame(true)}if(b.dataset.sh){return share()}if(b.dataset.n){return newGame()}if(b.dataset.c){return hide('menu')}if(b.dataset.r){S.w=0;S.l=0;S.hist=[];save();menuUI();return render()}
+ var k=b.dataset.k;if((k==='bg'||k==='back')&&!own(k,+b.dataset.v)&&!buy(k,+b.dataset.v)){menuUI();return}if(b.dataset.t)S[k]=!S[k];else{var v=b.dataset.v;S[k]=(v!==''&&!isNaN(v))?Number(v):v}
+ save();if(k==='mus'){S.mus?musicOn():musicOff()}if(k==='mstyle'){musicOff();musicOn()}if(k==='vol'&&MG)MG.gain.value=S.vol*1.2;
  applyBg();var sc=$('sheet').scrollTop;menuUI();$('sheet').scrollTop=sc;render()});
 $('mb').onclick=function(){menuUI();show('menu')};$('again').onclick=newGame;
+/* ---------- v3: coins, levels, shop, chat, daily, share ---------- */
+var BKS=['repeating-linear-gradient(45deg,#a31d2e 0 6px,#8b1626 6px 12px)','repeating-linear-gradient(135deg,#1e4fb0 0 6px,#173d8a 6px 12px)','repeating-conic-gradient(#0e7a58 0 25%,#0b5f45 0 50%) 0 0/14px 14px','repeating-linear-gradient(90deg,#f2b134 0 5px,#161004 5px 10px)','radial-gradient(circle,#fff4 0 3px,transparent 4px) 0 0/12px 12px,#5b2a86','repeating-linear-gradient(45deg,#d97706 0 6px,#0d2a6b 6px 12px)'];
+var BP=[0,150,150,200,250,300,200,400],KP=[0,0,0,120,180,240];
+function own(k,i){return (k==='bg'?BP[i]:KP[i])===0||S.own.indexOf(k+i)>=0}
+function buy(k,i){var p=k==='bg'?BP[i]:KP[i];if(S.coins<p){toast('Need '+p+' coins');return false}S.coins-=p;S.own.push(k+i);toast('Unlocked!');return true}
+var LN={sp:['Ehn! You dey wicked!','Oya now, see me!','Abeg, wetin be this one?','No wahala, I dey cook!'],hit:['Ehn! You wan finish me?','Haba! Why you do me so?','Chai! Pick two? Me?'],dr:['Market don empty my pocket!','Na so? I dey draw.','Wahala dey o!'],win:['Ha ha! Na me be champion!','Sorry o, you try small.'],lose:['Ehn! You too much! Respect.','Na luck! Rematch now!'],em:['😂 Ehn!','Calm down, my friend.','You dey fear?','🔥 Oya!']};
+function pk(a){return a[Math.floor(Math.random()*a.length)]}
+var sayT;function say(t){var e=$('say');e.textContent=t;e.className='on';clearTimeout(sayT);sayT=setTimeout(function(){e.className=''},2200)}
+function lvl(){return Math.floor(S.xp/100)+1}
+function hud(){$('coins').textContent='🪙 '+S.coins;$('stk').textContent='🔥 '+S.streak;$('lvn').textContent='Lv '+lvl();$('xp').style.width=(S.xp%100)+'%';$('lc').style.display=G.lcW?'':'none'}
+function saveG(){try{if(G.over)localStorage.removeItem('whot-g');else localStorage.setItem('whot-g',JSON.stringify(G))}catch(e){}}
+var ACH=[['w1','Win a game',function(){return S.w>=1}],['w10','Win 10 games',function(){return S.w>=10}],['nd','Win without drawing',function(){return G.nd}],['ws3','3 wins in a row',function(){return S.ws>=3}],['st7','7-day streak',function(){return S.streak>=7}],['dc','Win a daily challenge',function(){return G.daily&&G.won}]];
+function reward(p){var w=p===0;S.ws=w?(S.ws||0)+1:0;G.won=w;G.nd=w&&!G.drew;var c=w?30+(G.daily?30:0)+(G.drew?0:20):5,x=w?40:15,ol=lvl(),nw=[];S.coins+=c;S.xp+=x;
+ ACH.forEach(function(a){if(!S.ach[a[0]]&&a[2]()){S.ach[a[0]]=1;nw.push(a[1]);S.coins+=25}});
+ S.hist.unshift({w:w,d:G.daily?1:0,m:G.mv});S.hist=S.hist.slice(0,10);
+ G.rw='+'+c+' coins, +'+x+' XP'+(lvl()>ol?', Level up!':'')+(nw.length?'. Badge: '+nw.join(', '):'');say(pk(w?LN.lose:LN.win))}
+function today(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function seeded(){var a=0;today().split('').forEach(function(c){a=(a*31+c.charCodeAt(0))>>>0});return function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function sheet(h){$('sheet').innerHTML=h;show('menu')}
+function gift(){var t=today();if(S.last===t)return;var y=new Date(Date.now()-864e5),ys=y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();S.streak=S.last===ys?S.streak+1:1;var c=20+10*Math.min(S.streak,7);S.coins+=c;S.last=t;save();hud();
+ sheet('<h2>Daily gift 🎁</h2><p>Welcome back! You got <b>'+c+' coins</b>.</p><p>🔥 Streak: <b>'+S.streak+'</b> day'+(S.streak>1?'s':'')+'. Come back tomorrow for a bigger gift.</p><div class="row"><button class="btn" data-c="1">Collect</button></div>')}
+function share(){var w=G.won,c=document.createElement('canvas');c.width=600;c.height=315;var x=c.getContext('2d'),g=x.createLinearGradient(0,0,600,315);g.addColorStop(0,'#0b4a3a');g.addColorStop(1,'#06251d');x.fillStyle=g;x.fillRect(0,0,600,315);x.fillStyle='#f2b134';x.font='italic 900 54px Georgia,serif';x.fillText('WHOT',36,80);x.fillStyle='#fff8e7';x.font='700 34px sans-serif';x.fillText(w?'I won! 🏆':'I played Whot',36,150);x.font='22px sans-serif';x.fillText(S.w+' wins · Level '+lvl()+' · 🔥 '+S.streak+'-day streak',36,200);x.fillText(G.daily?'Daily challenge '+today()+(w?' · '+G.mv+' moves':''):'Can you beat me?',36,240);
+ var tx='I '+(w?'won':'played')+' a game of Whot! Can you beat me? '+location.href;
+ c.toBlob(function(b){var f=new File([b],'whot.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],text:tx}).catch(function(){});else window.open('https://wa.me/?text='+encodeURIComponent(tx))})}
+$('shr').onclick=share;$('lc').onclick=function(){G.lcW=0;toast('Last card!');sfx('last');render()};
+['😂','🔥','😭','👏'].forEach(function(e){var b=document.createElement('button');b.textContent=e;b.onclick=function(){toast(e);if(Math.random()<.6)setTimeout(function(){say(pk(LN.em))},700)};$('em').appendChild(b)});
+var TUT='<h2>Welcome to Whot! 🎉</h2><ul><li>Tap a <b>glowing card</b> that matches the middle card\'s shape or number.</li><li>Nothing fits? Tap the <b>Market</b> to draw.</li><li><b>2</b> and <b>5</b> make your rival pick cards. <b>1</b> and <b>8</b> give you another turn. <b>20</b> Whot lets you pick a shape.</li><li>One card left? Tap <b>Last card!</b> fast.</li><li>Stuck? Press <b>Hint</b>.</li></ul><p>Here are <b>50 free coins</b> to start your shop.</p><div class="row"><button class="btn" data-c="1">Let\'s play</button></div>';
 window.addEventListener('resize',function(){if(G)render()});
 if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
-applyBg();newGame();
+applyBg();var rs=null;try{rs=JSON.parse(localStorage.getItem('whot-g')||'null')}catch(e){}
+if(rs&&rs.h&&!rs.over){G=rs;G.busy=false;G.think=false;G.deal=false;G.lcW=0;render();if(G.choosing)show('pick');else if(G.turn===1)soon();toast('Game resumed')}else newGame();
+if(!S.seen){S.seen=1;S.last=today();S.streak=1;S.coins+=50;save();hud();sheet(TUT)}else gift();
 })();
 </script></body></html>
