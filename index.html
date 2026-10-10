@@ -188,7 +188,7 @@ function sched(){var a=ac();while(nt<a.currentTime+.3){var s=st%16,bar=(st>>4)%4
  if(s===0){tone(BASS[bar]*2,t,1.6,'sine',.07,MG);tone(BASS[bar]*3,t,1.6,'sine',.04,MG)}
  nt+=SP;st++}}
 function synthOn(){if(mt||!S.mus)return;try{ac();nt=AC.currentTime+.1;mt=setInterval(sched,100)}catch(e){}}
-var SONGS=['music1.mp3','music2.mp3','music3.mp3'],au=null,si=0,bad=false;
+var SONGS=['music1.mp3'],au=null,si=0,bad=false;
 function songOn(){try{ac();if(!au){au=new Audio();au.preload='auto';AC.createMediaElementSource(au).connect(MG);
  au.onended=function(){si=(si+1)%SONGS.length;au.src=SONGS[si];au.play().catch(function(){})};
  au.onerror=function(){if(si>0){si=0;au.src=SONGS[0];au.play().catch(function(){})}else{bad=true;toast('No song file found, using built-in music');synthOn()}}}
