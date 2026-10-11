@@ -4,9 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b3d31">
 <title>Whot - Card game | Playora</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../icon-192.png">
 <style>
 :root{--cream:#fff8e7;--ink:#2a1d12;--gold:#f2b134;--red:#d7263d}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -118,16 +117,39 @@ h1{font:italic 900 30px Georgia,serif;text-shadow:0 2px 0 #7a4a00,0 4px 12px #00
 .bk{flex-wrap:wrap}.pk{display:flex;flex-direction:column;align-items:center;font-size:11px}
 .bd{display:inline-block;background:var(--ink);color:var(--gold);border-radius:12px;padding:3px 10px;margin:2px;font-size:12px}.bd.off{opacity:.3}
 .hi{display:flex;justify-content:space-between;font-size:13px;border-bottom:1px dashed #0002;padding:3px 0}
+
+/* ---------- landscape layout (games are played sideways) ---------- */
+@media (min-aspect-ratio:5/4){
+#app{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) 230px;grid-template-rows:auto auto 1fr auto auto;column-gap:12px;row-gap:2px;padding:4px max(14px,env(safe-area-inset-right,0px)) 4px max(14px,env(safe-area-inset-left,0px))}
+body{padding:0}
+header{grid-column:1/-1;grid-row:1}
+h1{font-size:24px}
+.ib{padding:6px 14px}
+#cpu{grid-column:1;grid-row:2;height:54px;margin-top:0}
+#cpu .back{--w:32px;margin-left:-18px;border-width:2px}
+#mid{grid-column:1;grid-row:3;min-height:0;gap:34px}
+#mid::before{inset:0 8%}
+.card.big,.back.big{--w:70px}
+#side{grid-column:2;grid-row:2/5;display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:0}
+#side #info{min-height:0;font-size:13px;padding:6px 8px}
+#side #act{justify-content:center;min-height:0}
+#side .who .lab{margin:0 auto}
+#pl{grid-column:1;grid-row:4;margin:0 auto}
+#me{grid-column:1/-1;grid-row:5;min-height:96px;padding:16px 8px 4px}
+#me .card.ok{transform:translateY(-12px)}
+.sheet{max-width:560px}
+#toast{top:14%}
+}
 </style></head>
 <body data-back="0">
 <div id="app">
 <header><button class="ib" id="home" aria-label="Back to Playora" style="display:none">&#8249;</button><h1>Whot</h1><div class="chips"><span class="chip" id="coins"></span><span class="chip" id="stk"></span></div><button class="ib" id="mb">Menu</button></header>
-<div id="lvl"><b id="lvn"></b><i><u id="xp"></u></i><span id="score"></span></div>
-<div class="who"><div class="lab" id="cl"></div><div id="say"></div></div>
 <section id="cpu" aria-label="Computer's cards"></section>
 <section id="mid"><div class="pile"><div class="back big" id="mkt" role="button" tabindex="0" aria-label="Draw from the pile"></div><span id="mn"></span></div><div class="pile"><div id="top"></div><div id="chip"></div></div></section>
+<aside id="side"><div id="lvl"><b id="lvn"></b><i><u id="xp"></u></i><span id="score"></span></div>
+<div class="who"><div class="lab" id="cl"></div><div id="say"></div></div>
 <div id="info" aria-live="polite"></div>
-<div id="act"><button class="ib" id="lc" style="display:none">Last card!</button><span id="em"></span><button class="ib" id="hb">Hint</button></div>
+<div id="act"><button class="ib" id="lc" style="display:none">Last card!</button><span id="em"></span><button class="ib" id="hb">Hint</button></div></aside>
 <div class="lab" id="pl"></div>
 <section id="me" aria-label="Your cards"></section>
 </div>
@@ -298,7 +320,7 @@ function render(){
  $('info').innerHTML=(G.pend&&G.turn===0&&!G.over?'<b>Pick '+G.pend+'.</b> '+(S.def?'Play a '+G.pn+' to defend, or tap the draw pile.':'Tap the draw pile to draw.')+'<br>':'')+G.msg;
  var pl=$('pl');pl.dataset.i=(S.name||'You')[0].toUpperCase();pl.className='lab'+(lv?' on':'');pl.textContent=(S.name||'You')+' · '+G.h[0].length+' cards';
  $('hb').style.visibility=lv?'visible':'hidden';
- var me=$('me');me.innerHTML='';var nc=G.h[0].length,cw=Math.round((window.innerHeight<661?58:66)*S.csz),av=me.clientWidth-20,step=nc>1?Math.max(24,Math.min(cw+8,(av-cw)/(nc-1))):0;
+ var me=$('me');me.innerHTML='';var nc=G.h[0].length,cw=Math.round((window.innerHeight<400?46:window.innerHeight<661?58:66)*S.csz),av=me.clientWidth-20,step=nc>1?Math.max(24,Math.min(cw+8,(av-cw)/(nc-1))):0;
  G.h[0].forEach(function(c,i){var e=cardEl(c,'','button');e.style.setProperty('--w',cw+'px');var can=lv&&ok(c);e.classList.add(can?'ok':'no');if(i>0)e.style.marginLeft=(step-cw)+'px';
   if(G.deal){e.classList.add('deal');e.style.animationDelay=(i*70)+'ms'}
   if(can)e.onclick=function(){humanPlay(i,e)};me.appendChild(e)});
